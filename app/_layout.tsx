@@ -19,7 +19,7 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <App /> {/* Render the timer app */}
+      <App />
       <StatusBar style="auto" />
     </ThemeProvider>
   );
