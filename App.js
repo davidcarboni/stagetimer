@@ -10,6 +10,7 @@ const FINAL_THRESHOLD = 30; // 30 seconds in seconds
 export default function App() {
   useKeepAwake();
   const [timeLeft, setTimeLeft] = useState(null);
+  const [targetTime, setTargetTime] = useState(null);
   const [isRunning, setIsRunning] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const [bgColor, setBgColor] = useState('black');
@@ -21,40 +22,38 @@ export default function App() {
 
   // Handle timer countdown
   useEffect(() => {
-    if (isRunning && timeLeft > 0) {
+    if (isRunning && targetTime) {
       timerRef.current = setInterval(() => {
-        setTimeLeft(prev => {
-          const newTime = prev - 1;
+        const newTime = Math.max(0, Math.round((targetTime - Date.now()) / 1000));
+        setTimeLeft(newTime);
 
-          // Handle color changes
-          if (newTime <= FINAL_THRESHOLD) {
-            setBgColor(prevColor => {
-              if (prevColor === 'black') {
-                setTextColor('black');
-                return 'red';
-              }
-              setTextColor('red');
-              return 'black';
-            });
-          } else if (newTime <= WARNING_THRESHOLD) {
-            setBgColor('orange');
+        // Handle color changes
+        if (newTime <= FINAL_THRESHOLD) {
+          setBgColor(prevColor => {
+            if (prevColor === 'black') {
+              setTextColor('black');
+              return 'red';
+            }
             setTextColor('red');
-          } else {
-            setBgColor('black');
-            setTextColor('red');
-          }
-
-          return newTime;
-        });
-      }, 1000);
-    } else if (timeLeft === 0) {
+            return 'black';
+          });
+        } else if (newTime <= WARNING_THRESHOLD) {
+          setBgColor('orange');
+          setTextColor('red');
+        } else {
+          setBgColor('black');
+          setTextColor('red');
+        }
+        if (newTime === 0) {
+          setIsRunning(false);
+        }
+      }, 250);
+    } else {
       clearInterval(timerRef.current);
-      setBgColor('black');
-      setTextColor('red');
     }
 
     return () => clearInterval(timerRef.current);
-  }, [isRunning, timeLeft]);
+  }, [isRunning, targetTime]);
 
   // Handle controls visibility timeout
   useEffect(() => {
@@ -69,7 +68,9 @@ export default function App() {
 
   const startTimer = (minutes) => {
     clearInterval(flashIntervalRef.current);
-    setTimeLeft(minutes * 60);
+    const durationInSeconds = minutes * 60;
+    setTimeLeft(durationInSeconds);
+    setTargetTime(Date.now() + durationInSeconds * 1000);
     setIsRunning(true);
     setBgColor('black');
     setTextColor('red');
@@ -77,7 +78,16 @@ export default function App() {
   };
 
   const togglePause = () => {
-    setIsRunning(!isRunning);
+    if (isRunning) {
+      // Pausing
+      setIsRunning(false);
+    } else {
+      // Resuming
+      if (timeLeft > 0) {
+        setTargetTime(Date.now() + timeLeft * 1000);
+        setIsRunning(true);
+      }
+    }
     setShowControls(true);
   };
 
@@ -85,6 +95,7 @@ export default function App() {
     clearInterval(timerRef.current);
     clearInterval(flashIntervalRef.current);
     setTimeLeft(null);
+    setTargetTime(null);
     setIsRunning(false);
     setBgColor('black');
     setTextColor('red');
