@@ -2,7 +2,7 @@ import { useKeepAwake } from 'expo-keep-awake';
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 
-const TIMER_OPTIONS = [1, 3, 5, 10, 15, 20, 30];
+const TIMER_OPTIONS = [1, 3, 5, 10, 15, 20, 30, 45, 60]; // Timer options in minutes
 const WARNING_THRESHOLD = 60; // 1 minute in seconds
 const FINAL_THRESHOLD = 30; // 30 seconds in seconds
 
