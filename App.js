@@ -1,4 +1,5 @@
 import { useKeepAwake } from 'expo-keep-awake';
+import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 
@@ -99,38 +100,41 @@ export default function App() {
   const isLandscape = width > height;
 
   return (
-    <TouchableOpacity
-      style={[styles.container, { backgroundColor: bgColor }]}
-      activeOpacity={1}
-      onPress={() => setShowControls(true)}
-    >
-      {timeLeft === null ? (
-        <View style={styles.selectionContainer}>
-          {TIMER_OPTIONS.map(minutes => (
-            <TouchableOpacity
-              key={minutes}
-              style={styles.timeButton}
-              onPress={() => startTimer(minutes)}
-            >
-              <Text style={styles.buttonText}>{minutes} min</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      ) : (
-        <Text style={[styles.timerText, { color: textColor }, isLandscape && styles.timerTextLandscape]}>{formatTime(timeLeft)}</Text>
-      )}
+    <>
+      <StatusBar hidden={true} />
+      <TouchableOpacity
+        style={[styles.container, { backgroundColor: bgColor }]}
+        activeOpacity={1}
+        onPress={() => setShowControls(true)}
+      >
+        {timeLeft === null ? (
+          <View style={styles.selectionContainer}>
+            {TIMER_OPTIONS.map(minutes => (
+              <TouchableOpacity
+                key={minutes}
+                style={styles.timeButton}
+                onPress={() => startTimer(minutes)}
+              >
+                <Text style={styles.buttonText}>{minutes} min</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        ) : (
+          <Text style={[styles.timerText, { color: textColor }, isLandscape && styles.timerTextLandscape]}>{formatTime(timeLeft)}</Text>
+        )}
 
-      {showControls && timeLeft !== null && (
-        <View style={styles.controlsContainer}>
-          <TouchableOpacity style={[styles.controlButton, timeLeft <= WARNING_THRESHOLD && timeLeft > FINAL_THRESHOLD && styles.controlButtonOrange]} onPress={togglePause}>
-            <Text style={[styles.controlText, timeLeft <= WARNING_THRESHOLD && timeLeft > FINAL_THRESHOLD && styles.controlTextOrange]}>{isRunning ? 'Pause' : 'Resume'}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.controlButton, timeLeft <= WARNING_THRESHOLD && timeLeft > FINAL_THRESHOLD && styles.controlButtonOrange]} onPress={resetTimer}>
-            <Text style={[styles.controlText, timeLeft <= WARNING_THRESHOLD && timeLeft > FINAL_THRESHOLD && styles.controlTextOrange]}>Reset</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-    </TouchableOpacity>
+        {showControls && timeLeft !== null && (
+          <View style={styles.controlsContainer}>
+            <TouchableOpacity style={[styles.controlButton, timeLeft <= WARNING_THRESHOLD && timeLeft > FINAL_THRESHOLD && styles.controlButtonOrange]} onPress={togglePause}>
+              <Text style={[styles.controlText, timeLeft <= WARNING_THRESHOLD && timeLeft > FINAL_THRESHOLD && styles.controlTextOrange]}>{isRunning ? 'Pause' : 'Resume'}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.controlButton, timeLeft <= WARNING_THRESHOLD && timeLeft > FINAL_THRESHOLD && styles.controlButtonOrange]} onPress={resetTimer}>
+              <Text style={[styles.controlText, timeLeft <= WARNING_THRESHOLD && timeLeft > FINAL_THRESHOLD && styles.controlTextOrange]}>Reset</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </TouchableOpacity>
+    </>
   );
 }
 
