@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Dimensions } from 'react-native';
 import { useKeepAwake } from 'expo-keep-awake';
+import React, { useEffect, useRef, useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 
 const TIMER_OPTIONS = [1, 3, 5, 10, 15, 20, 30];
 const WARNING_THRESHOLD = 60; // 1 minute in seconds
@@ -12,9 +12,11 @@ export default function App() {
   const [isRunning, setIsRunning] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const [bgColor, setBgColor] = useState('black');
+  const [textColor, setTextColor] = useState('red');
   const timerRef = useRef(null);
   const controlsTimeoutRef = useRef(null);
   const flashIntervalRef = useRef(null);
+  const { width, height } = useWindowDimensions();
 
   // Handle timer countdown
   useEffect(() => {
@@ -25,9 +27,20 @@ export default function App() {
 
           // Handle color changes
           if (newTime <= FINAL_THRESHOLD) {
-            setBgColor(prevColor => prevColor === 'black' ? 'red' : 'black');
+            setBgColor(prevColor => {
+              if (prevColor === 'black') {
+                setTextColor('black');
+                return 'red';
+              }
+              setTextColor('red');
+              return 'black';
+            });
           } else if (newTime <= WARNING_THRESHOLD) {
             setBgColor('orange');
+            setTextColor('red');
+          } else {
+            setBgColor('black');
+            setTextColor('red');
           }
 
           return newTime;
@@ -36,6 +49,7 @@ export default function App() {
     } else if (timeLeft === 0) {
       clearInterval(timerRef.current);
       setBgColor('black');
+      setTextColor('red');
     }
 
     return () => clearInterval(timerRef.current);
@@ -57,6 +71,7 @@ export default function App() {
     setTimeLeft(minutes * 60);
     setIsRunning(true);
     setBgColor('black');
+    setTextColor('red');
     setShowControls(true);
   };
 
@@ -71,6 +86,7 @@ export default function App() {
     setTimeLeft(null);
     setIsRunning(false);
     setBgColor('black');
+    setTextColor('red');
     setShowControls(true);
   };
 
@@ -79,6 +95,8 @@ export default function App() {
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
+
+  const isLandscape = width > height;
 
   return (
     <TouchableOpacity
@@ -99,16 +117,16 @@ export default function App() {
           ))}
         </View>
       ) : (
-        <Text style={styles.timerText}>{formatTime(timeLeft)}</Text>
+        <Text style={[styles.timerText, { color: textColor }, isLandscape && styles.timerTextLandscape]}>{formatTime(timeLeft)}</Text>
       )}
 
       {showControls && timeLeft !== null && (
         <View style={styles.controlsContainer}>
-          <TouchableOpacity style={styles.controlButton} onPress={togglePause}>
-            <Text style={styles.controlText}>{isRunning ? 'Pause' : 'Resume'}</Text>
+          <TouchableOpacity style={[styles.controlButton, timeLeft <= WARNING_THRESHOLD && timeLeft > FINAL_THRESHOLD && styles.controlButtonOrange]} onPress={togglePause}>
+            <Text style={[styles.controlText, timeLeft <= WARNING_THRESHOLD && timeLeft > FINAL_THRESHOLD && styles.controlTextOrange]}>{isRunning ? 'Pause' : 'Resume'}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.controlButton} onPress={resetTimer}>
-            <Text style={styles.controlText}>Reset</Text>
+          <TouchableOpacity style={[styles.controlButton, timeLeft <= WARNING_THRESHOLD && timeLeft > FINAL_THRESHOLD && styles.controlButtonOrange]} onPress={resetTimer}>
+            <Text style={[styles.controlText, timeLeft <= WARNING_THRESHOLD && timeLeft > FINAL_THRESHOLD && styles.controlTextOrange]}>Reset</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -138,9 +156,12 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   timerText: {
-    color: 'red',
     fontSize: 72,
     fontWeight: 'bold',
+    textAlign: 'left',
+  },
+  timerTextLandscape: {
+    fontSize: 200,
   },
   controlsContainer: {
     position: 'absolute',
@@ -156,5 +177,11 @@ const styles = StyleSheet.create({
   controlText: {
     color: 'white',
     fontSize: 18,
+  },
+  controlButtonOrange: {
+    backgroundColor: 'rgba(255,255,255,0.7)',
+  },
+  controlTextOrange: {
+    color: 'black',
   },
 });
