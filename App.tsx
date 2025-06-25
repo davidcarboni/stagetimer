@@ -9,15 +9,15 @@ const FINAL_THRESHOLD = 30; // 30 seconds in seconds
 
 export default function App() {
   useKeepAwake();
-  const [timeLeft, setTimeLeft] = useState(null);
-  const [targetTime, setTargetTime] = useState(null);
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
+  const [targetTime, setTargetTime] = useState<number | null>(null);
   const [isRunning, setIsRunning] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const [bgColor, setBgColor] = useState('black');
   const [textColor, setTextColor] = useState('red');
-  const timerRef = useRef(null);
-  const controlsTimeoutRef = useRef(null);
-  const flashIntervalRef = useRef(null);
+  const timerRef = useRef<number | null>(null);
+  const controlsTimeoutRef = useRef<number | null>(null);
+  const flashIntervalRef = useRef<number | null>(null);
   const { width, height } = useWindowDimensions();
 
   // Handle timer countdown
@@ -49,10 +49,12 @@ export default function App() {
         }
       }, 250);
     } else {
-      clearInterval(timerRef.current);
+      if (timerRef.current) clearInterval(timerRef.current);
     }
 
-    return () => clearInterval(timerRef.current);
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
   }, [isRunning, targetTime]);
 
   // Handle controls visibility timeout
@@ -63,11 +65,13 @@ export default function App() {
       }, 3000);
     }
 
-    return () => clearTimeout(controlsTimeoutRef.current);
+    return () => {
+      if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
+    };
   }, [showControls]);
 
-  const startTimer = (minutes) => {
-    clearInterval(flashIntervalRef.current);
+  const startTimer = (minutes: number) => {
+    if (flashIntervalRef.current) clearInterval(flashIntervalRef.current);
     const durationInSeconds = minutes * 60;
     setTimeLeft(durationInSeconds);
     setTargetTime(Date.now() + durationInSeconds * 1000);
@@ -83,7 +87,7 @@ export default function App() {
       setIsRunning(false);
     } else {
       // Resuming
-      if (timeLeft > 0) {
+      if (timeLeft !== null && timeLeft > 0) {
         setTargetTime(Date.now() + timeLeft * 1000);
         setIsRunning(true);
       }
@@ -92,8 +96,8 @@ export default function App() {
   };
 
   const resetTimer = () => {
-    clearInterval(timerRef.current);
-    clearInterval(flashIntervalRef.current);
+    if (timerRef.current) clearInterval(timerRef.current);
+    if (flashIntervalRef.current) clearInterval(flashIntervalRef.current);
     setTimeLeft(null);
     setTargetTime(null);
     setIsRunning(false);
@@ -102,7 +106,7 @@ export default function App() {
     setShowControls(true);
   };
 
-  const formatTime = (seconds) => {
+  const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
