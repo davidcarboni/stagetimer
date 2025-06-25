@@ -9,8 +9,9 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "production": "eas build --platform android",
-    "preview": "eas build --platform android --profile preview"
+    "development": "eas build --platform all --profile development",
+    "preview": "eas build --platform android --profile preview",
+    "production": "eas build --platform android"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
