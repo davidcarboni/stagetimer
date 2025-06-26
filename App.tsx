@@ -8,7 +8,8 @@ import { useTimerStore } from './store/timerStore';
 
 export default function App() {
   useKeepAwake();
-  const { targetTime, isRunning, pausedTime, setTargetTime, setIsRunning, setPausedTime, reset } = useTimerStore();
+  const { targetTime, isRunning, pausedTime, duration, setTargetTime, setIsRunning, setPausedTime, setDuration, reset } =
+    useTimerStore();
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [showControls, setShowControls] = useState(true);
   const [bgColor, setBgColor] = useState('black');
@@ -33,7 +34,7 @@ export default function App() {
     } else {
       setTimeLeft(null);
     }
-  }, [targetTime, reset, pausedTime]);
+  }, [targetTime, reset, pausedTime, duration]);
 
   // Handle timer countdown
   useEffect(() => {
@@ -70,7 +71,7 @@ export default function App() {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [isRunning, targetTime, setIsRunning]);
+  }, [isRunning, targetTime, finalThreshold, warningThreshold, setIsRunning]);
 
   // Handle controls visibility timeout
   useEffect(() => {
@@ -100,6 +101,7 @@ export default function App() {
 
   const startTimer = (minutes: number) => {
     const durationInSeconds = minutes * 60;
+    setDuration(minutes);
     setWarningThreshold(calculateRoundedThreshold(durationInSeconds, 0.2));
     setFinalThreshold(calculateRoundedThreshold(durationInSeconds, 0.1));
     const newTargetTime = Date.now() + durationInSeconds * 1000;
@@ -119,12 +121,15 @@ export default function App() {
       setPausedTime(timeLeft);
       // We don't clear targetTime so we can resume
     } else {
-      // Resuming
+      // Resuming or restarting
       if (timeLeft !== null && timeLeft > 0) {
         const newTargetTime = Date.now() + timeLeft * 1000;
         setTargetTime(newTargetTime);
         setIsRunning(true);
         setPausedTime(null);
+      } else if (duration) {
+        // Restarting
+        startTimer(duration);
       }
     }
     setShowControls(true);

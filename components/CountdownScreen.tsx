@@ -40,7 +40,9 @@ const CountdownScreen: React.FC<CountdownScreenProps> = ({
       {showControls && (
         <View style={styles.controlsContainer}>
           <TouchableOpacity style={[styles.controlButton, isWarning && !isFinal && styles.controlButtonOrange]} onPress={onTogglePause}>
-            <Text style={[styles.controlText, isWarning && !isFinal && styles.controlTextOrange]}>{isRunning ? 'Pause' : 'Resume'}</Text>
+            <Text style={[styles.controlText, isWarning && !isFinal && styles.controlTextOrange]}>
+              {timeLeft > 0 ? (isRunning ? 'Pause' : 'Resume') : 'Restart'}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.controlButton, isWarning && !isFinal && styles.controlButtonOrange]} onPress={onReset}>
             <Text style={[styles.controlText, isWarning && !isFinal && styles.controlTextOrange]}>Reset</Text>
