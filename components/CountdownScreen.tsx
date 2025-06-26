@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
-import { IconSymbol } from './ui/IconSymbol';
 import { Colors } from '../constants/Colors';
+import { IconSymbol } from './ui/IconSymbol';
 
 interface CountdownScreenProps {
   timeLeft: number;
@@ -62,6 +62,7 @@ const styles = StyleSheet.create({
     fontSize: 72,
     fontWeight: 'bold',
     textAlign: 'left',
+    fontFamily: 'PublicSans-700',
   },
   timerTextLandscape: {
     fontSize: 200,

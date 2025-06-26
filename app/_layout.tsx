@@ -9,7 +9,9 @@ import App from '../App'; // Import the timer app
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    'DMSans-Regular': require('../assets/fonts/DmSans-regular.ttf'),
+    'PublicSans-Regular': require('../assets/fonts/PublicSans-regular.ttf'),
+    'PublicSans-900': require('../assets/fonts/PublicSans-900.ttf'),
   });
 
   if (!loaded) {
