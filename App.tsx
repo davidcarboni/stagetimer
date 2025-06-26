@@ -6,9 +6,6 @@ import CountdownScreen from './components/CountdownScreen';
 import TimeSelectionScreen from './components/TimeSelectionScreen';
 import { useTimerStore } from './store/timerStore';
 
-const WARNING_THRESHOLD = 60; // 1 minute in seconds
-const FINAL_THRESHOLD = 30; // 30 seconds in seconds
-
 export default function App() {
   useKeepAwake();
   const { targetTime, isRunning, pausedTime, setTargetTime, setIsRunning, setPausedTime, reset } = useTimerStore();
@@ -16,6 +13,8 @@ export default function App() {
   const [showControls, setShowControls] = useState(true);
   const [bgColor, setBgColor] = useState('black');
   const [textColor, setTextColor] = useState('red');
+  const [warningThreshold, setWarningThreshold] = useState(60);
+  const [finalThreshold, setFinalThreshold] = useState(30);
   const timerRef = useRef<number | null>(null);
   const controlsTimeoutRef = useRef<number | null>(null);
 
@@ -44,7 +43,7 @@ export default function App() {
         setTimeLeft(newTime);
 
         // Handle color changes
-        if (newTime <= FINAL_THRESHOLD) {
+        if (newTime <= finalThreshold) {
           setBgColor(prevColor => {
             if (prevColor === 'black') {
               setTextColor('black');
@@ -53,7 +52,7 @@ export default function App() {
             setTextColor('red');
             return 'black';
           });
-        } else if (newTime <= WARNING_THRESHOLD) {
+        } else if (newTime <= warningThreshold) {
           setBgColor('orange');
           setTextColor('black');
         } else {
@@ -86,8 +85,23 @@ export default function App() {
     };
   }, [showControls]);
 
+  const calculateRoundedThreshold = (totalDuration: number, percentage: number): number => {
+    const threshold = totalDuration * percentage;
+    let roundingIncrement = 5;
+    if (totalDuration > 600) {
+      roundingIncrement = 60;
+    } else if (totalDuration > 300) {
+      roundingIncrement = 30;
+    } else if (totalDuration > 60) {
+      roundingIncrement = 10;
+    }
+    return Math.round(threshold / roundingIncrement) * roundingIncrement;
+  };
+
   const startTimer = (minutes: number) => {
     const durationInSeconds = minutes * 60;
+    setWarningThreshold(calculateRoundedThreshold(durationInSeconds, 0.2));
+    setFinalThreshold(calculateRoundedThreshold(durationInSeconds, 0.1));
     const newTargetTime = Date.now() + durationInSeconds * 1000;
     setTargetTime(newTargetTime);
     setTimeLeft(durationInSeconds);
@@ -144,8 +158,8 @@ export default function App() {
               onTogglePause={togglePause}
               onReset={resetTimer}
               showControls={showControls}
-              isWarning={timeLeft <= WARNING_THRESHOLD}
-              isFinal={timeLeft <= FINAL_THRESHOLD}
+              isWarning={timeLeft <= warningThreshold}
+              isFinal={timeLeft <= finalThreshold}
             />
           )
         )}
