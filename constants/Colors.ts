@@ -24,9 +24,11 @@ export const Colors = {
     tabIconSelected: tintColorDark,
   },
   timer: {
-    red: '#FF0000',
-    orange: '#FFA500',
+    red: '#D32F2F',
+    orange: '#F57C00',
     black: '#000000',
     white: '#FFFFFF',
+    grey: '212121',
+    // lightGrey: '#F5F5F5',
   }
 };
