@@ -5,6 +5,7 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import CountdownScreen from './components/CountdownScreen';
 import TimeSelectionScreen from './components/TimeSelectionScreen';
 import { useTimerStore } from './store/timerStore';
+import { Colors } from './constants/Colors';
 
 export default function App() {
   useKeepAwake();
@@ -12,8 +13,8 @@ export default function App() {
     useTimerStore();
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [showControls, setShowControls] = useState(true);
-  const [bgColor, setBgColor] = useState('black');
-  const [textColor, setTextColor] = useState('red');
+  const [bgColor, setBgColor] = useState(Colors.timer.black);
+  const [textColor, setTextColor] = useState(Colors.timer.red);
   const [warningThreshold, setWarningThreshold] = useState(60);
   const [finalThreshold, setFinalThreshold] = useState(30);
   const timerRef = useRef<number | null>(null);
@@ -46,19 +47,19 @@ export default function App() {
         // Handle color changes
         if (newTime <= finalThreshold) {
           setBgColor(prevColor => {
-            if (prevColor === 'black') {
-              setTextColor('black');
-              return 'red';
+            if (prevColor === Colors.timer.black) {
+              setTextColor(Colors.timer.black);
+              return Colors.timer.red;
             }
-            setTextColor('red');
-            return 'black';
+            setTextColor(Colors.timer.red);
+            return Colors.timer.black;
           });
         } else if (newTime <= warningThreshold) {
-          setBgColor('orange');
-          setTextColor('black');
+          setBgColor(Colors.timer.orange);
+          setTextColor(Colors.timer.black);
         } else {
-          setBgColor('black');
-          setTextColor('red');
+          setBgColor(Colors.timer.black);
+          setTextColor(Colors.timer.red);
         }
         if (newTime === 0) {
           setIsRunning(false);
@@ -108,8 +109,8 @@ export default function App() {
     setTargetTime(newTargetTime);
     setTimeLeft(durationInSeconds);
     setIsRunning(true);
-    setBgColor('black');
-    setTextColor('red');
+    setBgColor(Colors.timer.black);
+    setTextColor(Colors.timer.red);
     setShowControls(true);
     setPausedTime(null);
   };
@@ -139,8 +140,8 @@ export default function App() {
     if (timerRef.current) clearInterval(timerRef.current);
     reset();
     setTimeLeft(null);
-    setBgColor('black');
-    setTextColor('red');
+    setBgColor(Colors.timer.black);
+    setTextColor(Colors.timer.red);
     setShowControls(true);
   };
 
