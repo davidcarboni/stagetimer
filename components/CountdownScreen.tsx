@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { IconSymbol } from './ui/IconSymbol';
 
 interface CountdownScreenProps {
   timeLeft: number;
@@ -40,12 +41,14 @@ const CountdownScreen: React.FC<CountdownScreenProps> = ({
       {showControls && (
         <View style={styles.controlsContainer}>
           <TouchableOpacity style={[styles.controlButton, isWarning && !isFinal && styles.controlButtonOrange]} onPress={onTogglePause}>
-            <Text style={[styles.controlText, isWarning && !isFinal && styles.controlTextOrange]}>
-              {timeLeft > 0 ? (isRunning ? 'Pause' : 'Resume') : 'Restart'}
-            </Text>
+            <IconSymbol
+              name={timeLeft > 0 ? (isRunning ? 'pause.fill' : 'play.fill') : 'backward.fill'}
+              size={24}
+              color={isWarning && !isFinal ? 'black' : 'white'}
+            />
           </TouchableOpacity>
           <TouchableOpacity style={[styles.controlButton, isWarning && !isFinal && styles.controlButtonOrange]} onPress={onReset}>
-            <Text style={[styles.controlText, isWarning && !isFinal && styles.controlTextOrange]}>Stop</Text>
+            <IconSymbol name="stop.fill" size={24} color={isWarning && !isFinal ? 'black' : 'white'} />
           </TouchableOpacity>
         </View>
       )}
