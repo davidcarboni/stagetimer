@@ -1,24 +1,38 @@
 import { useKeepAwake } from 'expo-keep-awake';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import CountdownScreen from './components/CountdownScreen';
+import TimeSelectionScreen from './components/TimeSelectionScreen';
+import { useTimerStore } from './store/timerStore';
 
-const TIMER_OPTIONS = [1, 3, 5, 10, 15, 20, 30, 45, 60]; // Timer options in minutes
 const WARNING_THRESHOLD = 60; // 1 minute in seconds
 const FINAL_THRESHOLD = 30; // 30 seconds in seconds
 
 export default function App() {
   useKeepAwake();
+  const { targetTime, isRunning, setTargetTime, setIsRunning, reset } = useTimerStore();
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
-  const [targetTime, setTargetTime] = useState<number | null>(null);
-  const [isRunning, setIsRunning] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const [bgColor, setBgColor] = useState('black');
   const [textColor, setTextColor] = useState('red');
   const timerRef = useRef<number | null>(null);
   const controlsTimeoutRef = useRef<number | null>(null);
-  const flashIntervalRef = useRef<number | null>(null);
-  const { width, height } = useWindowDimensions();
+
+  // Rehydrate timeLeft from persisted state
+  useEffect(() => {
+    if (targetTime) {
+      const newTime = Math.max(0, Math.round((targetTime - Date.now()) / 1000));
+      if (newTime > 0) {
+        setTimeLeft(newTime);
+      } else {
+        // Timer has already expired
+        reset();
+      }
+    } else {
+      setTimeLeft(null);
+    }
+  }, [targetTime, reset]);
 
   // Handle timer countdown
   useEffect(() => {
@@ -39,10 +53,8 @@ export default function App() {
           });
         } else if (newTime <= WARNING_THRESHOLD) {
           setBgColor('orange');
-          setTextColor('red');
         } else {
           setBgColor('black');
-          setTextColor('red');
         }
         if (newTime === 0) {
           setIsRunning(false);
@@ -71,10 +83,10 @@ export default function App() {
   }, [showControls]);
 
   const startTimer = (minutes: number) => {
-    if (flashIntervalRef.current) clearInterval(flashIntervalRef.current);
     const durationInSeconds = minutes * 60;
+    const newTargetTime = Date.now() + durationInSeconds * 1000;
+    setTargetTime(newTargetTime);
     setTimeLeft(durationInSeconds);
-    setTargetTime(Date.now() + durationInSeconds * 1000);
     setIsRunning(true);
     setBgColor('black');
     setTextColor('red');
@@ -85,6 +97,7 @@ export default function App() {
     if (isRunning) {
       // Pausing
       setIsRunning(false);
+      // We don't clear targetTime so we can resume
     } else {
       // Resuming
       if (timeLeft !== null && timeLeft > 0) {
@@ -97,22 +110,12 @@ export default function App() {
 
   const resetTimer = () => {
     if (timerRef.current) clearInterval(timerRef.current);
-    if (flashIntervalRef.current) clearInterval(flashIntervalRef.current);
+    reset();
     setTimeLeft(null);
-    setTargetTime(null);
-    setIsRunning(false);
     setBgColor('black');
     setTextColor('red');
     setShowControls(true);
   };
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  const isLandscape = width > height;
 
   return (
     <>
@@ -122,31 +125,21 @@ export default function App() {
         activeOpacity={1}
         onPress={() => setShowControls(true)}
       >
-        {timeLeft === null ? (
-          <View style={styles.selectionContainer}>
-            {TIMER_OPTIONS.map(minutes => (
-              <TouchableOpacity
-                key={minutes}
-                style={styles.timeButton}
-                onPress={() => startTimer(minutes)}
-              >
-                <Text style={styles.buttonText}>{minutes} min</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+        {targetTime === null ? (
+          <TimeSelectionScreen onTimeSelect={startTimer} />
         ) : (
-          <Text style={[styles.timerText, { color: textColor }, isLandscape && styles.timerTextLandscape]}>{formatTime(timeLeft)}</Text>
-        )}
-
-        {showControls && timeLeft !== null && (
-          <View style={styles.controlsContainer}>
-            <TouchableOpacity style={[styles.controlButton, timeLeft <= WARNING_THRESHOLD && timeLeft > FINAL_THRESHOLD && styles.controlButtonOrange]} onPress={togglePause}>
-              <Text style={[styles.controlText, timeLeft <= WARNING_THRESHOLD && timeLeft > FINAL_THRESHOLD && styles.controlTextOrange]}>{isRunning ? 'Pause' : 'Resume'}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.controlButton, timeLeft <= WARNING_THRESHOLD && timeLeft > FINAL_THRESHOLD && styles.controlButtonOrange]} onPress={resetTimer}>
-              <Text style={[styles.controlText, timeLeft <= WARNING_THRESHOLD && timeLeft > FINAL_THRESHOLD && styles.controlTextOrange]}>Reset</Text>
-            </TouchableOpacity>
-          </View>
+          timeLeft !== null && (
+            <CountdownScreen
+              timeLeft={timeLeft}
+              textColor={textColor}
+              isRunning={isRunning}
+              onTogglePause={togglePause}
+              onReset={resetTimer}
+              showControls={showControls}
+              isWarning={timeLeft <= WARNING_THRESHOLD}
+              isFinal={timeLeft <= FINAL_THRESHOLD}
+            />
+          )
         )}
       </TouchableOpacity>
     </>
@@ -158,49 +151,5 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  selectionContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-  },
-  timeButton: {
-    margin: 10,
-    padding: 20,
-    backgroundColor: '#333',
-    borderRadius: 10,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 24,
-  },
-  timerText: {
-    fontSize: 72,
-    fontWeight: 'bold',
-    textAlign: 'left',
-  },
-  timerTextLandscape: {
-    fontSize: 200,
-  },
-  controlsContainer: {
-    position: 'absolute',
-    bottom: 50,
-    flexDirection: 'row',
-  },
-  controlButton: {
-    marginHorizontal: 20,
-    padding: 15,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    borderRadius: 10,
-  },
-  controlText: {
-    color: 'white',
-    fontSize: 18,
-  },
-  controlButtonOrange: {
-    backgroundColor: 'rgba(255,255,255,0.7)',
-  },
-  controlTextOrange: {
-    color: 'black',
   },
 });
