@@ -42,6 +42,19 @@
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#dddddd"
+        },
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/DmSans-regular.ttf",
+            "./assets/fonts/DmSans-700.ttf",
+            "./assets/fonts/DmSans-900.ttf",
+            "./assets/fonts/PublicSans-regular.ttf",
+            "./assets/fonts/PublicSans-700.ttf",
+            "./assets/fonts/PublicSans-900.ttf"
+          ]
         }
       ]
     ],
