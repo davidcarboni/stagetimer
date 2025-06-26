@@ -10,7 +10,10 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     'DMSans-Regular': require('../assets/fonts/DmSans-regular.ttf'),
+    'DMSans-700': require('../assets/fonts/DmSans-700.ttf'),
+    'DMSans-900': require('../assets/fonts/DmSans-900.ttf'),
     'PublicSans-Regular': require('../assets/fonts/PublicSans-regular.ttf'),
+    'PublicSans-700': require('../assets/fonts/PublicSans-700.ttf'),
     'PublicSans-900': require('../assets/fonts/PublicSans-900.ttf'),
   });
 
