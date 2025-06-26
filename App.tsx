@@ -11,7 +11,7 @@ const FINAL_THRESHOLD = 30; // 30 seconds in seconds
 
 export default function App() {
   useKeepAwake();
-  const { targetTime, isRunning, setTargetTime, setIsRunning, reset } = useTimerStore();
+  const { targetTime, isRunning, pausedTime, setTargetTime, setIsRunning, setPausedTime, reset } = useTimerStore();
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [showControls, setShowControls] = useState(true);
   const [bgColor, setBgColor] = useState('black');
@@ -21,7 +21,9 @@ export default function App() {
 
   // Rehydrate timeLeft from persisted state
   useEffect(() => {
-    if (targetTime) {
+    if (pausedTime) {
+      setTimeLeft(pausedTime);
+    } else if (targetTime) {
       const newTime = Math.max(0, Math.round((targetTime - Date.now()) / 1000));
       if (newTime > 0) {
         setTimeLeft(newTime);
@@ -91,18 +93,22 @@ export default function App() {
     setBgColor('black');
     setTextColor('red');
     setShowControls(true);
+    setPausedTime(null);
   };
 
   const togglePause = () => {
     if (isRunning) {
       // Pausing
       setIsRunning(false);
+      setPausedTime(timeLeft);
       // We don't clear targetTime so we can resume
     } else {
       // Resuming
       if (timeLeft !== null && timeLeft > 0) {
-        setTargetTime(Date.now() + timeLeft * 1000);
+        const newTargetTime = Date.now() + timeLeft * 1000;
+        setTargetTime(newTargetTime);
         setIsRunning(true);
+        setPausedTime(null);
       }
     }
     setShowControls(true);
