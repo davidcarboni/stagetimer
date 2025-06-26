@@ -43,7 +43,7 @@ const CountdownScreen: React.FC<CountdownScreenProps> = ({
         <View style={styles.controlsContainer}>
           <TouchableOpacity style={[styles.controlButton, isWarning && !isFinal && styles.controlButtonOrange]} onPress={onTogglePause}>
             <IconSymbol
-              name={timeLeft > 0 ? (isRunning ? 'pause.fill' : 'play.fill') : 'backward.fill'}
+              name={timeLeft > 0 ? (isRunning ? 'pause.fill' : 'play.fill') : 'play.fill'}
               size={24}
               color={isWarning && !isFinal ? Colors.timer.black : Colors.timer.white}
             />
