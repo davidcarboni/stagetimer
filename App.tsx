@@ -34,7 +34,7 @@ export default function App() {
     } else {
       setTimeLeft(null);
     }
-  }, [targetTime, reset]);
+  }, [targetTime, reset, pausedTime]);
 
   // Handle timer countdown
   useEffect(() => {
@@ -55,13 +55,15 @@ export default function App() {
           });
         } else if (newTime <= WARNING_THRESHOLD) {
           setBgColor('orange');
+          setTextColor('black');
         } else {
           setBgColor('black');
+          setTextColor('red');
         }
         if (newTime === 0) {
           setIsRunning(false);
         }
-      }, 250);
+      }, 500);
     } else {
       if (timerRef.current) clearInterval(timerRef.current);
     }
@@ -69,7 +71,7 @@ export default function App() {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [isRunning, targetTime]);
+  }, [isRunning, targetTime, setIsRunning]);
 
   // Handle controls visibility timeout
   useEffect(() => {
