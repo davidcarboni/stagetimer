@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import * as Haptics from 'expo-haptics';
 
 const TIMER_OPTIONS = [1, 3, 5, 10, 15, 20, 30, 45, 60]; // Timer options in minutes
 
@@ -14,7 +15,10 @@ const TimeSelectionScreen: React.FC<TimeSelectionScreenProps> = ({ onTimeSelect 
         <TouchableOpacity
           key={minutes}
           style={styles.timeButton}
-          onPress={() => onTimeSelect(minutes)}
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            onTimeSelect(minutes);
+          }}
         >
           <Text style={styles.buttonText}>{minutes} min</Text>
         </TouchableOpacity>
