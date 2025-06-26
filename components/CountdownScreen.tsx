@@ -45,11 +45,11 @@ const CountdownScreen: React.FC<CountdownScreenProps> = ({
             <IconSymbol
               name={timeLeft > 0 ? (isRunning ? 'pause.fill' : 'play.fill') : 'play.fill'}
               size={24}
-              color={isWarning && !isFinal ? Colors.timer.black : Colors.timer.white}
+              color={Colors.timer.white}
             />
           </TouchableOpacity>
           <TouchableOpacity style={[styles.controlButton, isWarning && !isFinal && styles.controlButtonOrange]} onPress={onReset}>
-            <IconSymbol name="stop.fill" size={24} color={isWarning && !isFinal ? Colors.timer.black : Colors.timer.white} />
+            <IconSymbol name="stop.fill" size={24} color={Colors.timer.white} />
           </TouchableOpacity>
         </View>
       )}

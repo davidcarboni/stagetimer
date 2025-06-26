@@ -56,7 +56,7 @@ export default function App() {
           });
         } else if (newTime <= warningThreshold) {
           setBgColor(Colors.timer.orange);
-          setTextColor(Colors.timer.black);
+          setTextColor(Colors.timer.white);
         } else {
           setBgColor(Colors.timer.black);
           setTextColor(Colors.timer.red);
