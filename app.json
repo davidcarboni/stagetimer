@@ -42,7 +42,7 @@
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#dddddd"
-        },
+        }
       ],
       [
         "expo-font",
@@ -56,7 +56,8 @@
             "./assets/fonts/PublicSans-900.ttf"
           ]
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true
