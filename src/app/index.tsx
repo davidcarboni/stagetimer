@@ -1,14 +1,13 @@
-import { useKeepAwake } from 'expo-keep-awake';
-import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import CountdownScreen from '@/components/CountdownScreen';
 import TimeSelectionScreen from '@/components/TimeSelectionScreen';
-import { useTimerStore } from '@/store/timerStore';
 import { Colors } from '@/constants/Colors';
+import { useTimerStore } from '@/store/timerStore';
+import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
+import { StatusBar } from 'expo-status-bar';
+import React, { useEffect, useRef, useState } from 'react';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 
 export default function App() {
-  useKeepAwake();
   const { targetTime, isRunning, pausedTime, duration, setTargetTime, setIsRunning, setPausedTime, setDuration, reset } =
     useTimerStore();
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
@@ -19,6 +18,18 @@ export default function App() {
   const [finalThreshold, setFinalThreshold] = useState(30);
   const timerRef = useRef<number | NodeJS.Timeout | null>(null);
   const controlsTimeoutRef = useRef<number | NodeJS.Timeout | null>(null);
+
+  // Keep screen awake only while the timer is actively running
+  useEffect(() => {
+    if (isRunning) {
+      activateKeepAwakeAsync();
+    } else {
+      deactivateKeepAwake();
+    }
+    return () => {
+      deactivateKeepAwake();
+    };
+  }, [isRunning]);
 
   // Rehydrate timeLeft from persisted state
   useEffect(() => {
