@@ -17,8 +17,8 @@ export default function App() {
   const [textColor, setTextColor] = useState(Colors.timer.red);
   const [warningThreshold, setWarningThreshold] = useState(60);
   const [finalThreshold, setFinalThreshold] = useState(30);
-  const timerRef = useRef<number | null>(null);
-  const controlsTimeoutRef = useRef<number | null>(null);
+  const timerRef = useRef<number | NodeJS.Timeout | null>(null);
+  const controlsTimeoutRef = useRef<number | NodeJS.Timeout | null>(null);
 
   // Rehydrate timeLeft from persisted state
   useEffect(() => {
