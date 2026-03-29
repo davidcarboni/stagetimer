@@ -6,7 +6,6 @@
     "icon": "./assets/images/icon.png",
     "scheme": "stagetimer",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "io.carboni.stagetimer",
@@ -25,7 +24,6 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true,
       "package": "io.carboni.stagetimer"
     },
     "web": {
@@ -57,13 +55,14 @@
           ]
         }
       ],
-      "expo-web-browser"
+      "expo-web-browser",
+      "expo-image"
     ],
     "experiments": {
-      "typedRoutes": true
+      "typedRoutes": true,
+      "reactCompiler": true
     },
     "extra": {
-      "router": {},
       "eas": {
         "projectId": "0ebeabff-589f-424a-a3d8-8002e8f28e46"
       }

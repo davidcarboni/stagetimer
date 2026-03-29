@@ -5,11 +5,11 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 interface TimerState {
   targetTime: number | null;
   isRunning: boolean;
-  pausedTime: number | null; // Add pausedTime to store timeLeft on pause
+  pausedTime: number | null;
   duration: number | null;
   setTargetTime: (targetTime: number | null) => void;
   setIsRunning: (isRunning: boolean) => void;
-  setPausedTime: (pausedTime: number | null) => void; // Add setter for pausedTime
+  setPausedTime: (pausedTime: number | null) => void;
   setDuration: (duration: number | null) => void;
   reset: () => void;
 }
@@ -19,7 +19,7 @@ export const useTimerStore = create<TimerState>()(
     (set) => ({
       targetTime: null,
       isRunning: false,
-      pausedTime: null, // Initialize pausedTime
+      pausedTime: null,
       duration: null,
       setTargetTime: (targetTime) => set({ targetTime }),
       setIsRunning: (isRunning) => set({ isRunning }),
@@ -28,8 +28,8 @@ export const useTimerStore = create<TimerState>()(
       reset: () => set({ targetTime: null, isRunning: false, pausedTime: null, duration: null }),
     }),
     {
-      name: 'timer-storage', // name of the item in the storage (must be unique)
-      storage: createJSONStorage(() => AsyncStorage), // (optional) by default, 'localStorage' is used
+      name: 'timer-storage',
+      storage: createJSONStorage(() => AsyncStorage),
     }
   )
 );

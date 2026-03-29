@@ -2,10 +2,10 @@ import { useKeepAwake } from 'expo-keep-awake';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import CountdownScreen from './components/CountdownScreen';
-import TimeSelectionScreen from './components/TimeSelectionScreen';
-import { useTimerStore } from './store/timerStore';
-import { Colors } from './constants/Colors';
+import CountdownScreen from '@/components/CountdownScreen';
+import TimeSelectionScreen from '@/components/TimeSelectionScreen';
+import { useTimerStore } from '@/store/timerStore';
+import { Colors } from '@/constants/Colors';
 
 export default function App() {
   useKeepAwake();
